@@ -38,3 +38,10 @@ jobs:
 
       - name: Run Tests
         run: dotnet test -c Release --no-build --verbosity normal
+#  Snyk Open Source (SCA) Scan
+      - name: 🧩 Snyk Open Source (SCA)
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: 9d24edfd-d10d-48b6-9bc6-c6df4389218d
+        with:
+          args: test --all-projects --severity-threshold=high
