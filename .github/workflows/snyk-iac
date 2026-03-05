@@ -1,6 +1,7 @@
 name: Snyk IaC Scan
 
 on:
+  workflow_dispatch:  #
   push:
     branches:
       - main
