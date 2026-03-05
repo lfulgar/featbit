@@ -1,0 +1,66 @@
+name: Snyk IaC Scan
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  snyk-iac:
+    name: Snyk IaC Security Scan
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js (required for Snyk CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: CDK synth
+        run: npx cdk synth > cdk-output.yaml
+
+      - name: Scan synthesized template
+        run: |
+          snyk iac test cdk-output.yaml \
+            --severity-threshold=medium
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate to Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk IaC test
+        run: |
+          snyk iac test . \
+            --report \
+            --severity-threshold=medium
+
+      # Optional: Upload results to GitHub Security tab
+      - name: Run Snyk IaC and generate SARIF
+        run: |
+          snyk iac test . \
+            --sarif-file-output=snyk-iac.sarif
+
+      - name: Upload SARIF to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk-iac.sarif
