@@ -37,7 +37,7 @@ COPY modules/front-end/ .
 RUN npm run build:prod
 
 ### run app
-FROM debian:bullseye-slim
+FROM debian:11.11-slim
 
 RUN apt-get update -y &&  \
     apt-get install -y gettext-base nginx xz-utils && \
