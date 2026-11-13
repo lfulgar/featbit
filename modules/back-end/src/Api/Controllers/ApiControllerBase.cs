@@ -1,5 +1,7 @@
 using System.Net.Mime;
+using Api.Authorization;
 using Api.Filters;
+using Application.Bases.Exceptions;
 using Application.Users;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -35,6 +37,12 @@ public class ApiControllerBase : ControllerBase
             if (_orgId.HasValue)
             {
                 return _orgId.Value;
+            }
+
+            // the organization header has been rejected by the tenant check, don't let the request act on it
+            if (HttpContext.Items.ContainsKey(TenantAuthorizationFilter.InaccessibleOrgKey))
+            {
+                throw new ForbiddenException("The current user is not a member of the requested organization.");
             }
 
             var orgIdHeaderValue = HttpContext.Request.Headers[ApiConstants.OrgIdHeaderKey];

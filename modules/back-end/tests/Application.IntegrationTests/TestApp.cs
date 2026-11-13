@@ -38,6 +38,9 @@ public class TestApp : WebApplicationFactory<Program>
             collection.Replace(ServiceDescriptor.Transient<ICachePopulatingService, TestCachePopulatingService>());
             collection.Replace(ServiceDescriptor.Transient<IWorkspaceService, TestWorkspaceService>());
             collection.Replace(ServiceDescriptor.Transient<IUserService, TestUserService>());
+            collection.Replace(ServiceDescriptor.Transient<IOrganizationService, TestOrganizationService>());
+            collection.Replace(ServiceDescriptor.Transient<IProjectService, TestProjectService>());
+            collection.Replace(ServiceDescriptor.Transient<IEnvironmentService, TestEnvironmentService>());
 
             // remove the kafka consumer from the test application because it is not needed
             var kafkaConsumerService =
@@ -80,6 +83,23 @@ public class TestApp : WebApplicationFactory<Program>
         var content = new StringContent(body, Encoding.UTF8, MediaTypeNames.Application.Json);
 
         return await client.PostAsync(uri, content);
+    }
+
+    public async Task<HttpResponseMessage> SendAsync(
+        HttpMethod method,
+        string uri,
+        IDictionary<string, string>? headers = null)
+    {
+        var client = CreateClient();
+        AddAuthorizationHeader(client);
+
+        var request = new HttpRequestMessage(method, uri);
+        foreach (var (key, value) in headers ?? new Dictionary<string, string>())
+        {
+            request.Headers.Add(key, value);
+        }
+
+        return await client.SendAsync(request);
     }
 
     public string GetToken(User user)

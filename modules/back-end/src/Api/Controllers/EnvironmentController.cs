@@ -27,21 +27,21 @@ public class EnvironmentController : ApiControllerBase
         return Ok(env);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ApiResponse<EnvironmentVm>> UpdateAsync(Guid id, UpdateEnvironment request)
+    [HttpPut("{envId:guid}")]
+    public async Task<ApiResponse<EnvironmentVm>> UpdateAsync(Guid envId, UpdateEnvironment request)
     {
-        request.Id = id;
+        request.Id = envId;
 
         var env = await Mediator.Send(request);
         return Ok(env);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<ApiResponse<bool>> DeleteAsync(Guid id)
+    [HttpDelete("{envId:guid}")]
+    public async Task<ApiResponse<bool>> DeleteAsync(Guid envId)
     {
         var request = new DeleteEnvironment
         {
-            Id = id
+            Id = envId
         };
 
         var success = await Mediator.Send(request);

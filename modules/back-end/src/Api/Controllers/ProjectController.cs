@@ -46,22 +46,22 @@ public class ProjectController : ApiControllerBase
         return Ok(projectWithEnvs);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ApiResponse<ProjectVm>> UpdateAsync(Guid id, UpdateProject request)
+    [HttpPut("{projectId:guid}")]
+    public async Task<ApiResponse<ProjectVm>> UpdateAsync(Guid projectId, UpdateProject request)
     {
-        request.Id = id;
+        request.Id = projectId;
 
         var project = await Mediator.Send(request);
         return Ok(project);
     }
 
     [HttpDelete]
-    [Route("{id:guid}")]
-    public async Task<ApiResponse<bool>> DeleteAsync(Guid id)
+    [Route("{projectId:guid}")]
+    public async Task<ApiResponse<bool>> DeleteAsync(Guid projectId)
     {
         var request = new DeleteProject
         {
-            Id = id
+            Id = projectId
         };
 
         var success = await Mediator.Send(request);

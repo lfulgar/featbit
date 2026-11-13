@@ -1,4 +1,5 @@
 using System.Text;
+using Api.Authorization;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,9 @@ public class ConfigureMvcOptions : IConfigureOptions<MvcOptions>
     public void Configure(MvcOptions options)
     {
         options.OutputFormatters.Insert(0, new JsonPatchDocumentOutputFormatter());
+
+        // confine portal users to their own workspace & organizations
+        options.Filters.Add<TenantAuthorizationFilter>();
     }
 }
 
